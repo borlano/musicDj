@@ -1,5 +1,5 @@
 import './index.sass';
-
+import {player} from './../../pages/queue/index.js'
 export default () => {
   $('#add-queue').on('submit', function(e){
     e.preventDefault();
@@ -14,7 +14,13 @@ export default () => {
         $.ajax({
           url: '/',
           success: function (result) {
-            $('#video-list').html(result)
+            let old_length = $('#video-list').children().length;
+            $('#video-list').html(result);
+            let new_length = $('#video-list').children().length;
+            if(old_length == 0 && new_length > old_length){
+              player.loadVideoById($('#video-list .video-item .queue_link').first().attr('data-code'));
+              player.playVideo();
+            }
             $('#error').text('');
           }
         })

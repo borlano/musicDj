@@ -10,10 +10,7 @@
                     @endforeach
                 </ul>
                 @include('blocks.forms.index')
-                <div class="mt-5" id="video" data-default="https://www.youtube.com/embed/5qap5aO4i9A?controls=1&autoplay=1">
-                    <iframe width="100%" height="500" src="https://www.youtube.com/embed/5qap5aO4i9A?controls=1&autoplay=1"
-                            frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen></iframe>
+                <div class="mt-5" id="ytplayer" data-default="5qap5aO4i9A">
                 </div>
             </div>
         </div>
