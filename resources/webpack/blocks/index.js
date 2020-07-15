@@ -1,3 +1,4 @@
+import Forms from './forms'
 export default () => {
-  console.log('init blocks');
+  Forms();
 };

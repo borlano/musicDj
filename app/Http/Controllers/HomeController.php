@@ -27,7 +27,12 @@ class HomeController extends Controller
         $queues = Queue::all();
 
         if($request->ajax()){
-            return $queues;
+            $html = '';
+            foreach ($queues as $queue) {
+                $html .= view('blocks.queue.element', compact('queue'))->render();
+            }
+
+            return $html;
         }
 
         return view('pages.queue.index', compact('queues'));
