@@ -1,9 +1,7 @@
 <?php
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('', 'HomeController@queue');
+Route::post('queue', 'HomeController@setMusic')->name('queue.set');
+Route::delete('queue/{music_id}', 'HomeController@deleteMusic')->name('queue.delete');

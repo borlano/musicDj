@@ -2,27 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\QueueRequest;
+use App\Models\Queue;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function setMusic(QueueRequest $request)
     {
-        $this->middleware('auth');
+        Queue::create([
+            'link' => $request->get('link'),
+            'ip' => $request->ip(),
+        ]);
+
+        return ['status' => true, 'message' => 'Добавлено'];
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index()
+    public function deleteMusic($music_id)
     {
-        return view('home');
+        Queue::find($music_id)->delete();
+    }
+
+    public function queue(Request $request){
+        $queues = Queue::all();
+
+        if($request->ajax()){
+            return $queues;
+        }
+
+        return view('pages.queue.index', compact('queues'));
     }
 }

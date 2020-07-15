@@ -1,6 +1,6 @@
-import initHome from './home';
+import initQueue from './queue';
 
 export default () => {
   console.log('init pages');
-  initHome();
+  initQueue();
 };

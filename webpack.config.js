@@ -43,16 +43,21 @@ const PATH_PUBLIC = path.resolve(__dirname, 'public');
  */
 const styleLoader = (isLoadResources = true, isSassSyntax = true) => {
   const loaders = [
-    ExtractCssChunks.loader,
+    {
+      loader: ExtractCssChunks.loader,
+      options: {
+        hmr: !IS_PRODUCTION,
+      },
+    },
     {
       loader: 'css-loader',
       options: {
-        sourceMap: true,
+        sourceMap: !IS_PRODUCTION,
       },
     }, {
       loader: 'postcss-loader',
       options: {
-        sourceMap: true,
+        sourceMap: !IS_PRODUCTION,
         plugins: ((() => {
           const plugins = [];
           plugins.push(
@@ -73,7 +78,7 @@ const styleLoader = (isLoadResources = true, isSassSyntax = true) => {
     {
       loader: 'sass-loader',
       options: {
-        sourceMap: true,
+        sourceMap: !IS_PRODUCTION,
         indentedSyntax: isSassSyntax,
         includePaths: [
           path.resolve(__dirname, 'node_modules'),
@@ -87,7 +92,7 @@ const styleLoader = (isLoadResources = true, isSassSyntax = true) => {
     loaders.push({
       loader: 'sass-resources-loader',
       options: {
-        sourceMap: true,
+        sourceMap: !IS_PRODUCTION,
         resources: path.resolve(PATH_SRC, 'common', 'index.scss'),
       },
     });
@@ -112,17 +117,20 @@ const config = {
     chunkFilename: 'js/[name].js?[hash]',
   },
   optimization: {
-    minimizer: [
-      new UglifyJsPlugin({
-        sourceMap: true,
-        uglifyOptions: {
-          sourceMap: true,
-          output: {
-            comments: false,
-          },
-        },
-      }),
-    ],
+    // Пока не работает
+    // minimizer: [
+    //   new UglifyJsPlugin({
+    //     cache: true,
+    //     // parallel: true,
+    //     sourceMap: !IS_PRODUCTION,
+    //     uglifyOptions: {
+    //       sourceMap: !IS_PRODUCTION,
+    //       output: {
+    //         comments: false,
+    //       },
+    //     },
+    //   }),
+    // ],
     splitChunks: {
       cacheGroups: {
         default: false,
@@ -148,7 +156,26 @@ const config = {
         options: {
           configFile: path.resolve(__dirname, 'babel.config.js'),
         },
-        exclude: file => /node_modules/.test(file) && !/\.vue\.js/.test(file),
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.(js|jsx|es6)$/,
+        loader: 'babel-loader',
+        options: {
+          configFile: path.resolve(__dirname, 'babel.config.js'),
+        },
+        include: [
+          /[\\/]node_modules[\\/]tiny-slider[\\/]/,
+          /[\\/]node_modules[\\/]choices.js[\\/]/
+        ]
+      },
+      {
+        test: /\.vue\.js$/,
+        loader: 'babel-loader',
+        options: {
+          configFile: path.resolve(__dirname, 'babel.config.js'),
+        },
+        include: /node_modules/,
       },
       {
         test: /\.vue$/,
@@ -240,9 +267,10 @@ const config = {
       path.resolve(__dirname, 'node_modules'),
       path.resolve(PATH_SRC),
     ],
-    // alias: {
-    //   vue$: 'vue/dist/vue.common.js',
-    // },
+    alias: {
+      '~': path.resolve(__dirname, 'resources', 'webpack'),
+      '@cabinet': path.resolve(__dirname, 'resources', 'webpack', 'pages', 'cabinet', 'app'),
+    },
     extensions: ['*', '.js', '.es6', '.jsx', '.vue', '.css', '.scss', '.sass'],
   },
 
@@ -277,21 +305,17 @@ const config = {
     port: SERVER_PORT,
     headers: { 'Access-Control-Allow-Origin': '*' },
     contentBase: path.resolve(PATH_SRC),
+    // uncomment if you have error in console Invalid Host/Origin header
+    // disableHostCheck: true,
   },
 
   plugins: [
     new ExtractCssChunks({
       filename: 'css/[name].css?[hash]',
       chunkFilename: 'css/[name].css?[hash]',
-      hot: IS_PRODUCTION,
     }),
     new webpack.DefinePlugin({
       'process.env': { NODE_ENV: JSON.stringify(process.env.NODE_ENV) },
-    }),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery',
     }),
     new VueLoaderPlugin(),
   ],
