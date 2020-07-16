@@ -10,10 +10,16 @@ class HomeController extends Controller
 {
     public function setMusic(QueueRequest $request)
     {
-        Queue::create([
-            'link' => $request->get('link'),
-            'ip' => $request->ip(),
-        ]);
+        $parsed_url = parse_url($request->get('link'));
+        if(isset($parsed_url['query'])) {
+            parse_str($parsed_url['query'], $query);
+            if(isset($query['v'])) {
+                Queue::create([
+                    'link' => 'https://www.youtube.com/embed/' . $query['v'],
+                    'ip' => $request->ip(),
+                ]);
+            }
+        }
 
         return ['status' => true, 'message' => 'Добавлено'];
     }
